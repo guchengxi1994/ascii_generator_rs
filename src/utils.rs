@@ -65,24 +65,34 @@ pub fn sub_image_mean(img: &image::RgbImage, x: u32, y: u32, w: u32, h: u32) -> 
     mean
 }
 
+pub fn sub_image_mean_rgb(img: &image::RgbImage, x: u32, y: u32, w: u32, h: u32) -> [f64; 3] {
+    // imageproc::stats::mean_f32(&sub_image(img, x, y, w, h))
+    let sub_img = sub_image(img, x, y, w, h);
+    let r: u64 = sub_img.pixels().map(|p| p.0[0] as u64).sum();
+    let g: u64 = sub_img.pixels().map(|p| p.0[1] as u64).sum();
+    let b: u64 = sub_img.pixels().map(|p| p.0[2] as u64).sum();
+    let pixel_count = w * h;
+    let r_mean = r as f64 / pixel_count as f64;
+    let g_mean = g as f64 / pixel_count as f64;
+    let b_mean = b as f64 / pixel_count as f64;
+    [r_mean, g_mean, b_mean]
+}
+
 pub fn get_index(char_set_len: usize, mean: f64) -> usize {
     let i = mean / 255.0 * char_set_len as f64;
     return min(i.round() as usize, char_set_len - 1);
 }
 
-pub fn image_to_blocks_and_reshape(
-    img: &mut image::RgbImage,
-    block_size: [usize; 2],
-) -> (u32, u32) {
+pub fn get_blocks_num(img: &mut image::RgbImage, block_size: [usize; 2]) -> (u32, u32) {
     let block_num_in_horizontal = img.width() as u32 / block_size[0] as u32;
     let block_num_in_vertical = img.height() as u32 / block_size[1] as u32;
 
-    image::imageops::resize(
-        img,
-        block_num_in_horizontal * (block_size[0] as u32),
-        block_num_in_vertical * (block_size[1] as u32),
-        image::imageops::FilterType::Nearest,
-    );
+    // image::imageops::resize(
+    //     img,
+    //     block_num_in_horizontal * (block_size[0] as u32),
+    //     block_num_in_vertical * (block_size[1] as u32),
+    //     image::imageops::FilterType::Nearest,
+    // );
 
     return (block_num_in_horizontal, block_num_in_vertical);
 }

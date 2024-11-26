@@ -1,6 +1,6 @@
 use image::Rgb;
 
-use crate::utils::{self, image_to_blocks_and_reshape};
+use crate::utils::{self, get_blocks_num};
 
 pub fn img_to_img(
     input_path: &str,
@@ -16,7 +16,7 @@ pub fn img_to_img(
     };
 
     let mut img = image::open(input_path)?.into_rgb8();
-    let blocks = image_to_blocks_and_reshape(&mut img, bs);
+    let blocks = get_blocks_num(&mut img, bs);
     let mut new_img;
     if dark_mode {
         new_img = image::RgbImage::new(img.width(), img.height());
